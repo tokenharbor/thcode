@@ -29,13 +29,15 @@ jobs:
         working-directory: packages/opencode
         run: bun run script/build.ts --single
 
-      - name: Pack binary as thcode
+      - name: Pack binary + license attribution as tarball
         run: |
           set -euo pipefail
-          mkdir -p out
-          cp packages/opencode/dist/opencode-darwin-arm64/bin/opencode out/thcode
-          chmod +x out/thcode
-          (cd out && tar -czf thcode-darwin-arm64.tar.gz thcode)
+          mkdir -p out/payload
+          cp packages/opencode/dist/opencode-darwin-arm64/bin/opencode out/payload/thcode
+          chmod +x out/payload/thcode
+          cp LICENSE out/payload/LICENSE
+          cp NOTICE.md out/payload/NOTICE.md
+          (cd out/payload && tar -czf ../thcode-darwin-arm64.tar.gz thcode LICENSE NOTICE.md)
           ls -lh out/
 
       - name: Compute version tag
