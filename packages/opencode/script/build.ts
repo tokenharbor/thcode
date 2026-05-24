@@ -143,7 +143,19 @@ const allTargets: {
   },
 ]
 
-const targets = singleFlag
+// `BUN_TARGETS` env var lets CI pick exactly which targets to build —
+// useful for cross-compiling extra arches from a single runner without
+// running every target. Example: BUN_TARGETS=darwin-arm64,darwin-x64
+const envTargetList = (process.env.BUN_TARGETS ?? "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean)
+const targets = envTargetList.length > 0
+  ? allTargets.filter((item) => {
+      const key = `${item.os}-${item.arch}${item.abi ? "-" + item.abi : ""}${item.avx2 === false ? "-baseline" : ""}`
+      return envTargetList.includes(key) || envTargetList.includes(`${item.os}-${item.arch}`)
+    })
+  : singleFlag
   ? allTargets.filter((item) => {
       if (item.os !== process.platform || item.arch !== process.arch) {
         return false

@@ -11,55 +11,89 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runs: macos-14            # Apple Silicon
-            target: darwin-arm64
-            asset: thcode-darwin-arm64.tar.gz
-          - runs: macos-13            # Intel
-            target: darwin-x64
-            asset: thcode-darwin-x64.tar.gz
-          - runs: ubuntu-latest       # x86_64 glibc
-            target: linux-x64
-            asset: thcode-linux-x64.tar.gz
-    runs-on: ${{ matrix.runs }}
+  build-mac:
+    # Single macos-14 (Apple Silicon) runner cross-compiles BOTH Mac
+    # arches. Avoids the macos-13 (Intel) free-tier queue which
+    # routinely sits at 30+ minutes.
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
-
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.14
-
       - name: Install deps
         run: bun install --frozen-lockfile
 
-      - name: Build (${{ matrix.target }}, single target)
+      - name: Build (darwin-arm64 + darwin-x64)
         working-directory: packages/opencode
-        run: bun run script/build.ts --single
+        env:
+          BUN_TARGETS: darwin-arm64,darwin-x64
+        run: bun run script/build.ts
 
-      - name: Pack binary + license attribution as tarball
+      - name: Pack mac arm64 tarball
+        run: |
+          set -euo pipefail
+          mkdir -p out/payload-arm64
+          cp packages/opencode/dist/opencode-darwin-arm64/bin/opencode out/payload-arm64/thcode
+          chmod +x out/payload-arm64/thcode
+          cp LICENSE out/payload-arm64/LICENSE
+          cp NOTICE.md out/payload-arm64/NOTICE.md
+          (cd out/payload-arm64 && tar -czf ../thcode-darwin-arm64.tar.gz thcode LICENSE NOTICE.md)
+
+      - name: Pack mac x64 tarball
+        run: |
+          set -euo pipefail
+          mkdir -p out/payload-x64
+          cp packages/opencode/dist/opencode-darwin-x64/bin/opencode out/payload-x64/thcode
+          chmod +x out/payload-x64/thcode
+          cp LICENSE out/payload-x64/LICENSE
+          cp NOTICE.md out/payload-x64/NOTICE.md
+          (cd out/payload-x64 && tar -czf ../thcode-darwin-x64.tar.gz thcode LICENSE NOTICE.md)
+          ls -lh out/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac-binaries
+          path: |
+            out/thcode-darwin-arm64.tar.gz
+            out/thcode-darwin-x64.tar.gz
+          retention-days: 1
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - name: Install deps
+        run: bun install --frozen-lockfile
+
+      - name: Build (linux-x64)
+        working-directory: packages/opencode
+        env:
+          BUN_TARGETS: linux-x64
+        run: bun run script/build.ts
+
+      - name: Pack linux x64 tarball
         run: |
           set -euo pipefail
           mkdir -p out/payload
-          cp packages/opencode/dist/opencode-${{ matrix.target }}/bin/opencode out/payload/thcode
+          cp packages/opencode/dist/opencode-linux-x64/bin/opencode out/payload/thcode
           chmod +x out/payload/thcode
           cp LICENSE out/payload/LICENSE
           cp NOTICE.md out/payload/NOTICE.md
-          (cd out/payload && tar -czf ../${{ matrix.asset }} thcode LICENSE NOTICE.md)
+          (cd out/payload && tar -czf ../thcode-linux-x64.tar.gz thcode LICENSE NOTICE.md)
           ls -lh out/
 
-      - name: Upload artifact for release job
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.asset }}
-          path: out/${{ matrix.asset }}
+          name: linux-binary
+          path: out/thcode-linux-x64.tar.gz
           retention-days: 1
 
   release:
-    needs: build
+    needs: [build-mac, build-linux]
     runs-on: ubuntu-latest
     permissions:
       contents: write
