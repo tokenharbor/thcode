@@ -1,25 +1,20 @@
-// Token Harbor branding for thcode — replaces upstream OpenCode logo.
-// 4-row layout the splash renderer expects: 1 decoration row + 3 letter rows.
-// "TOKEN" on the left (cyan), "HARBOR" on the right (white).
+// Plain-text Token Harbor brand. The splash renderer prints these
+// strings in bold theme colors (left = cyan, right = white), so no
+// ASCII-art glyphs needed — Season wanted clean text instead of the
+// previous ornate block letters.
 export const logo = {
-  left: [
-    "                        ",
-    "████ █▀▀█ █▄_█ █▀▀▀ █▀▀█",
-    "_██_ █__█ █▀█_ █▀▀_ █__█",
-    "_██_ ▀▀▀▀ █_▀█ ▀▀▀▀ █__█",
-  ],
-  right: [
-    "                              ▄     ",
-    "█__█ █▀▀█ █▀▀█ █▀▀▄ █▀▀█ █▀▀█",
-    "████ ████ █▀▀_ █▀▀▄ █__█ █▀█_",
-    "█__█ █__█ █__█ █▀▀▀ ▀▀▀▀ █_▀█",
-  ],
+  left: ["TOKEN HARBOR"],
+  right: ["CODE"],
 }
 
-// Compact exit badge shown when the session closes.
+// Tiny exit badge — same convention. Kept short so it doesn't crowd
+// the close-of-session footer.
 export const go = {
-  left: ["    ", "████", "_██_", "_██_"],
-  right: ["    ", "█__█", "████", "█__█"],
+  left: ["TH"],
+  right: ["go"],
 }
 
+// Marks list kept for back-compat with the splash glyph styler — none
+// of the new plain-text strings contain these characters but the
+// renderer references the constant.
 export const marks = "_^~,"

@@ -28,6 +28,11 @@ jobs:
         working-directory: packages/opencode
         env:
           BUN_TARGETS: darwin-arm64,darwin-x64
+          # Pin the displayed opencode version to the upstream release
+          # this fork is based on. Without this, build.ts falls back to
+          # the dev-style "0.0.0-<branch>-<datetime>" tag which Season
+          # asked us not to surface.
+          OPENCODE_VERSION: "1.15.10"
         run: bun run script/build.ts
 
       - name: Pack mac arm64 tarball
@@ -73,6 +78,7 @@ jobs:
         working-directory: packages/opencode
         env:
           BUN_TARGETS: linux-x64
+          OPENCODE_VERSION: "1.15.10"
         run: bun run script/build.ts
 
       - name: Pack linux x64 tarball

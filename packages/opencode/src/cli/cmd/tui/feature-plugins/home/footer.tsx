@@ -2,6 +2,7 @@ import type { TuiPlugin, TuiPluginApi } from "@opencode-ai/plugin/tui"
 import type { InternalTuiPlugin } from "../../plugin/internal"
 import { createMemo, Match, Show, Switch } from "solid-js"
 import { Global } from "@opencode-ai/core/global"
+import { THCODE_VERSION } from "@/cli/version"
 
 const id = "internal:home-footer"
 
@@ -49,8 +50,9 @@ function Version(props: { api: TuiPluginApi }) {
   const theme = () => props.api.theme.current
 
   return (
-    <box flexShrink={0}>
-      <text fg={theme().textMuted}>{props.api.app.version}</text>
+    <box flexShrink={0} flexDirection="column" alignItems="flex-end">
+      <text fg={theme().text}>tokenharbor {THCODE_VERSION}</text>
+      <text fg={theme().textMuted}>opencode {props.api.app.version}</text>
     </box>
   )
 }
