@@ -1,25 +1,25 @@
 // Token Harbor branding for thcode — replaces upstream OpenCode logo.
-// Same 4-row × ~19-char layout the splash renderer expects.
-// "TH" on the left (cyan), "CODE" on the right (white).
+// 4-row layout the splash renderer expects: 1 decoration row + 3 letter rows.
+// "TOKEN" on the left (cyan), "HARBOR" on the right (white).
 export const logo = {
   left: [
-    "         ",
-    "████ █__█",
-    "_██_ ████",
-    "_██_ █__█",
+    "                        ",
+    "████ █▀▀█ █▄_█ █▀▀▀ █▀▀█",
+    "_██_ █__█ █▀█_ █▀▀_ █__█",
+    "_██_ ▀▀▀▀ █_▀█ ▀▀▀▀ █__█",
   ],
   right: [
-    "             ▄     ",
-    "█▀▀▀ █▀▀█ █▀▀█ █▀▀▀",
-    "█___ █__█ █__█ █^^^",
-    "▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀",
+    "                              ▄     ",
+    "█__█ █▀▀█ █▀▀█ █▀▀▄ █▀▀█ █▀▀█",
+    "████ ████ █▀▀_ █▀▀▄ █__█ █▀█_",
+    "█__█ █__█ █__█ █▀▀▀ ▀▀▀▀ █_▀█",
   ],
 }
 
 // Compact exit badge shown when the session closes.
 export const go = {
-  left: ["    ", "█▀▀█", "█^^^", "▀▀▀▀"],
-  right: ["    ", "█▀▀█", "█__█", "▀▀▀▀"],
+  left: ["    ", "████", "_██_", "_██_"],
+  right: ["    ", "█__█", "████", "█__█"],
 }
 
 export const marks = "_^~,"
