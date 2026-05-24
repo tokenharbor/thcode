@@ -395,6 +395,49 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         })
       }
     })
+
+    // thcode update toast — wrapper stamps ~/.thcode/state.json after
+    // its 24h-cooldown GitHub check; if either component is behind,
+    // surface a one-shot toast in the TUI. The user exits with Ctrl+C
+    // and the wrapper auto-applies the update on exit.
+    void (async () => {
+      try {
+        const { readFile } = await import("node:fs/promises")
+        const { homedir } = await import("node:os")
+        const path = await import("node:path")
+        const statePath = path.join(homedir(), ".thcode", "state.json")
+        const raw = await readFile(statePath, "utf8").catch(() => null)
+        if (!raw) return
+        const state = JSON.parse(raw) as {
+          latestWrapperSha?: string
+          latestBinaryTag?: string
+        }
+        const installedShaPath = path.join(homedir(), ".thcode", "wrapper-sha")
+        const installedTagPath = path.join(homedir(), ".thcode", "binary-tag")
+        const installedSha = (await readFile(installedShaPath, "utf8").catch(() => "")).trim()
+        const installedTag = (await readFile(installedTagPath, "utf8").catch(() => "")).trim()
+        const wrapperAhead =
+          state.latestWrapperSha &&
+          installedSha &&
+          state.latestWrapperSha !== installedSha.slice(0, 7)
+        const binaryAhead =
+          state.latestBinaryTag &&
+          installedTag &&
+          state.latestBinaryTag !== installedTag
+        if (!wrapperAhead && !binaryAhead) return
+        const parts: string[] = []
+        if (wrapperAhead) parts.push("wrapper")
+        if (binaryAhead) parts.push("binary")
+        toast.show({
+          variant: "info",
+          title: "thcode update available",
+          message: `${parts.join(" + ")} have new versions. Exit (Ctrl+C) and thcode auto-applies the update.`,
+          duration: 10_000,
+        })
+      } catch {
+        // Best-effort; never block app startup on the update check.
+      }
+    })()
   })
 
   let continued = false
