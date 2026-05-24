@@ -1,20 +1,32 @@
-// Plain-text Token Harbor brand. The splash renderer prints these
-// strings in bold theme colors (left = cyan, right = white), so no
-// ASCII-art glyphs needed — Season wanted clean text instead of the
-// previous ornate block letters.
+// "TOKEN HARBOR" on the left (cyan), "CODE" on the right (white).
+// 3-row × 4-char block letters using ONLY █ and space — big enough
+// to read across a room, but no decorative marks (Season asked for
+// "clean and big", not the previous ornate underscore/caret style).
+//
+// Letters: T O K E N   H A R B O R (left)   |   C O D E (right)
 export const logo = {
-  left: ["TOKEN HARBOR"],
-  right: ["CODE"],
+  left: [
+    "                                                       ",
+    "████ ████ █  █ ████ █  █  █  █ ████ ████ ████ ████ ████",
+    " ██  █  █ ███  ███  ████  ████ ████ ███  █ ██ █  █ ███ ",
+    " ██  ████ █  █ ████ █  █  █  █ █  █ █ ██ ████ ████ █ ██",
+  ],
+  right: [
+    "                   ",
+    "████ ████ ███  ████",
+    "█    █  █ █ ██ ███ ",
+    "████ ████ ███  ████",
+  ],
 }
 
-// Tiny exit badge — same convention. Kept short so it doesn't crowd
+// Compact exit badge — kept as a tiny "TH" so it doesn't crowd
 // the close-of-session footer.
 export const go = {
-  left: ["TH"],
-  right: ["go"],
+  left: ["    ", "████", " ██ ", " ██ "],
+  right: ["    ", "█  █", "████", "█  █"],
 }
 
-// Marks list kept for back-compat with the splash glyph styler — none
-// of the new plain-text strings contain these characters but the
-// renderer references the constant.
-export const marks = "_^~,"
+// Renderer treats these glyphs as styled marks (alt-tinted, shadowed).
+// We don't use them anywhere in the brand strings above — kept only
+// because logo.tsx imports the constant.
+export const marks = ""
